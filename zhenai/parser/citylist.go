@@ -8,7 +8,7 @@
 package parser
 
 import (
-	"crawler/engine"
+	"github.com/george518/crawler/engine"
 	"regexp"
 )
 

@@ -8,8 +8,8 @@
 package parser
 
 import (
-	"crawler/engine"
-	"crawler/model"
+	"github.com/george518/crawler/engine"
+	"github.com/george518/crawler/model"
 	"regexp"
 	"strconv"
 )

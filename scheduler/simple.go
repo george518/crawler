@@ -8,7 +8,7 @@
 package scheduler
 
 import (
-	"crawler/engine"
+	"github.com/george518/crawler/engine"
 )
 
 type SimpleScheduler struct {

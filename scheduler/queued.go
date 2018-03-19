@@ -7,7 +7,7 @@
 *************************************************************/
 package scheduler
 
-import "crawler/engine"
+import "github.com/george518/crawler/engine"
 
 type QueuedScheduler struct {
 	requestChan chan engine.Request

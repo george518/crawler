@@ -8,10 +8,10 @@
 package main
 
 import (
-	"crawler/engine"
-	"crawler/persist"
-	"crawler/scheduler"
-	"crawler/zhenai/parser"
+	"github.com/george518/crawler/engine"
+	"github.com/george518/crawler/persist"
+	"github.com/george518/crawler/scheduler"
+	"github.com/george518/crawler/zhenai/parser"
 )
 
 func main() {
