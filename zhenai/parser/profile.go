@@ -8,10 +8,11 @@
 package parser
 
 import (
-	"github.com/george518/crawler/engine"
-	"github.com/george518/crawler/model"
 	"regexp"
 	"strconv"
+
+	"github.com/george518/crawler/engine"
+	"github.com/george518/crawler/model"
 )
 
 var ageRe = regexp.MustCompile(`<td><span class="label">年龄：</span>([\d]+)岁</td>`)
@@ -26,8 +27,12 @@ var XinzuoRe = regexp.MustCompile(`<td><span class="label">星座：</span><span
 var HouseRe = regexp.MustCompile(`<td><span class="label">住房条件：</span><span field="">([^<]+)</span></td>`)
 var CarRe = regexp.MustCompile(`<td><span class="label">是否购车：</span><span field="">([^<]+)</span></td>`)
 var OccupationRe = regexp.MustCompile(`<td><span class="label">职业：</span><span field="">([^<]+)</span></td>`)
+var GuessRe = regexp.MustCompile(`<a class="exp-user-name"[^>]*href="(http://album.zhenai.com/u/[\d]+)">([^<]+)</a>
+`)
 
-func ParseProfile(content []byte, name string) engine.ParseResult {
+var IdUrlRe = regexp.MustCompile(`http://album.zhenai.com/u/([\d]+)`)
+
+func ParseProfile(content []byte, name string, url string) engine.ParseResult {
 	profile := model.Profile{}
 	age, err := strconv.Atoi(extractString(content, ageRe))
 	if err != nil {
@@ -50,10 +55,29 @@ func ParseProfile(content []byte, name string) engine.ParseResult {
 	profile.Occupation = extractString(content, OccupationRe)
 	profile.Xingzuo = extractString(content, XinzuoRe)
 	profile.Education = extractString(content, EducationRe)
+	id := extractString([]byte(url), IdUrlRe)
+
+	//fmt.Println(url)
 
 	profile.Name = name
 	result := engine.ParseResult{
-		Items: []interface{}{profile},
+		Items: []engine.Item{
+			{
+				Url:     url,
+				Type:    "zhenai",
+				Id:      id,
+				PayLoad: profile,
+			},
+		},
+	}
+
+	mths := GuessRe.FindAllSubmatch(content, -1)
+	for _, m := range mths {
+		name := string(m[2])
+		result.Requests = append(result.Requests, engine.Request{
+			Url:        string(m[1]),
+			ParserFunc: ProfileParser(name),
+		})
 	}
 	return result
 }
@@ -64,5 +88,12 @@ func extractString(contents []byte, re *regexp.Regexp) string {
 		return string(match[1])
 	} else {
 		return ""
+	}
+}
+
+func ProfileParser(
+	name string) engine.ParserFunc {
+	return func(c []byte, url string) engine.ParseResult {
+		return ParseProfile(c, name, url)
 	}
 }

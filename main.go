@@ -15,10 +15,14 @@ import (
 )
 
 func main() {
+	itemChan, err := persist.ItemServer("dating_profile")
+	if err != nil {
+		panic(err)
+	}
 	e := engine.ConcurrentEngine{
 		Scheduler:   &scheduler.QueuedScheduler{},
 		WorkerCount: 100,
-		ItemChan:    persist.ItemServer(),
+		ItemChan:    itemChan,
 	}
 	e.Run(engine.Request{
 		Url:        "http://www.zhenai.com/zhenghun",

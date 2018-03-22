@@ -8,7 +8,6 @@
 package engine
 
 import (
-	"github.com/george518/crawler/fetcher"
 	"log"
 )
 
@@ -34,15 +33,4 @@ func (e SimpleEngine) Run(seeds ...Request) {
 			log.Printf("got item %v", item)
 		}
 	}
-}
-
-func Worker(r Request) (ParseResult, error) {
-	//log.Printf("fetching %s", r.Url)
-	body, err := fetcher.Fetch(r.Url)
-	if err != nil {
-		//log.Printf("fetch: error fetch url%s:%v", r.Url, err)
-		return ParseResult{}, err
-	}
-
-	return r.ParserFunc(body), nil
 }
