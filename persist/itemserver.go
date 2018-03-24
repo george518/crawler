@@ -29,7 +29,7 @@ func ItemServer(index string) (chan engine.Item, error) {
 			item := <-out
 			log.Printf("item saver: got item #%d:%v", itemCount, item)
 			itemCount++
-			err := save(item, client, index)
+			err := Save(item, client, index)
 			if err != nil {
 				log.Printf("err #%d %v", itemCount, err)
 			}
@@ -39,7 +39,7 @@ func ItemServer(index string) (chan engine.Item, error) {
 	return out, nil
 }
 
-func save(item engine.Item, client *elastic.Client, index string) error {
+func Save(item engine.Item, client *elastic.Client, index string) error {
 
 	if item.Type == "" {
 		return errors.New("must supply Type")

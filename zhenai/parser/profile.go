@@ -32,7 +32,7 @@ var GuessRe = regexp.MustCompile(`<a class="exp-user-name"[^>]*href="(http://alb
 
 var IdUrlRe = regexp.MustCompile(`http://album.zhenai.com/u/([\d]+)`)
 
-func ParseProfile(content []byte, name string, url string) engine.ParseResult {
+func parseProfile(content []byte, name string, url string) engine.ParseResult {
 	profile := model.Profile{}
 	age, err := strconv.Atoi(extractString(content, ageRe))
 	if err != nil {
@@ -73,10 +73,9 @@ func ParseProfile(content []byte, name string, url string) engine.ParseResult {
 
 	mths := GuessRe.FindAllSubmatch(content, -1)
 	for _, m := range mths {
-		name := string(m[2])
 		result.Requests = append(result.Requests, engine.Request{
-			Url:        string(m[1]),
-			ParserFunc: ProfileParser(name),
+			Url:    string(m[1]),
+			Parser: NewProfileParser(string(m[2])),
 		})
 	}
 	return result
@@ -91,9 +90,30 @@ func extractString(contents []byte, re *regexp.Regexp) string {
 	}
 }
 
-func ProfileParser(
-	name string) engine.ParserFunc {
-	return func(c []byte, url string) engine.ParseResult {
-		return ParseProfile(c, name, url)
+//func ProfileParser(
+//	name string) engine.ParserFunc {
+//	return func(c []byte, url string) engine.ParseResult {
+//		return parseProfile(c, name, url)
+//	}
+//}
+
+type ProfileParser struct {
+	userName string
+}
+
+func (p *ProfileParser) Parse(
+	contents []byte,
+	url string) engine.ParseResult {
+	return parseProfile(contents, url, p.userName)
+}
+
+func (p *ProfileParser) Serialize() (
+	name string, args interface{}) {
+	return "ProfileParser", p.userName
+}
+
+func NewProfileParser(name string) *ProfileParser {
+	return &ProfileParser{
+		userName: name,
 	}
 }

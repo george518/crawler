@@ -48,7 +48,7 @@ func TestItemServer(t *testing.T) {
 
 	const index = "test_profile"
 
-	err = save(expected, client, index)
+	err = Save(expected, client, index)
 
 	if err != nil {
 		panic(err)
